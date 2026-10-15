@@ -67,6 +67,9 @@ class YouTubeAutomationAgent {
       this.logger.info('Initializing database...');
       this.db = new Database();
       await this.db.initialize();
+      if (process.env.CLOUD_MODE === 'true' && await this.db.getSetting('automation_paused') == null) {
+        await this.db.setSetting('automation_paused', 'true');
+      }
       await this.db.markInterruptedJobs();
       this.recovery = new GenerationRecoveryService(this.db, {
         logger: this.logger,
@@ -377,6 +380,7 @@ class YouTubeAutomationAgent {
     };
   }
   setupAPI() {
+    require('./utils/cloud-access').installCloudAccess(this);
     this.app.use(express.json({ limit: '1mb' }));
     this.app.use(express.static(path.join(__dirname, 'dashboard')));
 
