@@ -17,6 +17,7 @@ class DailyAutomation {
 
   async initialize() {
     this.logger.info('Initializing daily automation scheduler...');
+    this.isEnabled = await this.db.getSetting('automation_paused') !== 'true';
     
     await this.setupScheduledTasks();
     

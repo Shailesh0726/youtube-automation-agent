@@ -67,8 +67,9 @@ class YouTubeAutomationAgent {
       this.logger.info('Initializing database...');
       this.db = new Database();
       await this.db.initialize();
-      if (process.env.CLOUD_MODE === 'true' && await this.db.getSetting('automation_paused') == null) {
+      if (process.env.CLOUD_MODE === 'true' && await this.db.getSetting('cloud_setup_initialized') !== 'true') {
         await this.db.setSetting('automation_paused', 'true');
+        await this.db.setSetting('cloud_setup_initialized', 'true');
       }
       await this.db.markInterruptedJobs();
       this.recovery = new GenerationRecoveryService(this.db, {
